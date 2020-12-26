@@ -1,4 +1,4 @@
-package heightmapgen
+package main
 
 import (
 	"fmt"
@@ -18,7 +18,7 @@ func main() {
 
 	fmt.Println("starting program at root path: " + root)
 
-	rootDir, err := listSubDirs(root)
+	rootDir, err := ListSubDirs(root)
 	check(err)
 	fmt.Println(rootDir)
 }

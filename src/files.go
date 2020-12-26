@@ -1,10 +1,11 @@
-package heightmapgen
+package main
 
 import (
 	"io/ioutil"
 )
 
-func listSubDirs(path string) ([]string, error) {
+// ListSubDirs returns file, err
+func ListSubDirs(path string) ([]string, error) {
 	fileInfo, err := ioutil.ReadDir(path)
 
 	var files []string
