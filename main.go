@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 )
 
@@ -12,7 +13,18 @@ func check(e error) {
 }
 
 func main() {
-	path := os.Args[1]
+	root := os.Args[1]
 
-	fmt.Println("starting program at path: " + path)
+	fmt.Println("starting program at root path: " + root)
+
+	fileInfo, err := ioutil.ReadDir(root)
+	check(err)
+
+	var files []string
+	for _, file := range fileInfo {
+		fmt.Println(file.Name())
+		//files = append(files, file.Name())
+	}
+
+	fmt.Println(files)
 }
