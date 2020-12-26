@@ -2,23 +2,15 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 )
-
-func check(err error) {
-	if err != nil {
-		log.Fatal(err)
-		panic(err)
-	}
-}
 
 func main() {
 	root := os.Args[1]
 
 	fmt.Println("starting program at root path: " + root)
 
-	rootDir, err := ListSubDirs(root)
-	check(err)
+	rootDir, err := GetAllSubDirs(root)
+	Check(err)
 	fmt.Println(rootDir)
 }
