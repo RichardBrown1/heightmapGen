@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-//GetAllAsciiFiles returns files, err
-func GetAllAsciiFiles(path string) ([]string, error) {
+//GetAllASCIIFiles returns files, err
+func GetAllASCIIFiles(path string) ([]string, error) {
 	var files []string
 	parentFolder := path
 	fileInfo, err := ioutil.ReadDir(path)
@@ -26,7 +26,7 @@ func GetAllAsciiFiles(path string) ([]string, error) {
 
 		if file.IsDir() {
 			var subdirFiles []string
-			subdirFiles, err = GetAllAsciiFiles(parentFolder + file.Name())
+			subdirFiles, err = GetAllASCIIFiles(parentFolder + file.Name())
 			files = append(files, subdirFiles...)
 		}
 	}
