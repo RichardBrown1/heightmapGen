@@ -10,7 +10,7 @@ func main() {
 
 	fmt.Println("starting program at root path: " + root)
 
-	rootDir, err := GetAllSubDirs(root)
+	allASCIIFiles, err := GetAllAsciiFiles(root)
 	Check(err)
-	fmt.Println(rootDir)
+	fmt.Println(allASCIIFiles)
 }
