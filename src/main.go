@@ -10,7 +10,18 @@ func main() {
 
 	fmt.Println("starting program at root path: " + root)
 
+	//find ascii files
 	allASCIIFiles, err := GetAllASCIIFiles(root)
 	Check(err)
-	fmt.Println(allASCIIFiles)
+	//fmt.Println(allASCIIFiles)
+
+	//get files
+	for _, fileName := range allASCIIFiles {
+		fmt.Println(fileName)
+
+		file, err := os.Open(fileName)
+		Check(err)
+		defer file.Close()
+
+	}
 }
