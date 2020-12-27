@@ -19,6 +19,7 @@ type esriGrid struct {
 }
 
 func main() {
+
 	root := os.Args[1]
 
 	fmt.Println("starting program at root path: " + root)
@@ -29,6 +30,7 @@ func main() {
 	//fmt.Println(allASCIIFiles)
 
 	//get files
+	const noDataValueDefault = -9999.0
 	for _, fileName := range allASCIIFiles {
 		fmt.Println(fileName)
 
@@ -39,29 +41,32 @@ func main() {
 		var map1 esriGrid
 
 		scanner := bufio.NewScanner(file)
-		for i := 0; i < 6; i++ {
-			scanner.Scan()
 
-			wordSep := strings.Fields(scanner.Text())[1]
+		//Get ESRIInfo
+		scanner.Scan()
+		map1.ncols, err = strconv.Atoi(strings.Fields(scanner.Text())[1])
 
-			switch i {
-			case 0:
-				map1.ncols, err = strconv.Atoi(wordSep)
-			case 1:
-				map1.nrows, err = strconv.Atoi(wordSep)
-			case 2:
-				map1.xllcorner, err = strconv.ParseFloat(wordSep, 64)
-			case 3:
-				map1.yllcorner, err = strconv.ParseFloat(wordSep, 64)
-			case 4:
-				map1.cellsize, err = ParseFloat32(wordSep)
-			case 5: //This can be missing depending on implementation
-				map1.noDataValue, err = ParseFloat32(wordSep)
-			case default:
+		scanner.Scan()
+		map1.nrows, err = strconv.Atoi(strings.Fields(scanner.Text())[1])
 
-			}
+		//TODO: There are xllcenter and yllcenter in some esri grids
+		scanner.Scan()
+		map1.xllcorner, err = strconv.ParseFloat(strings.Fields(scanner.Text())[1], 64)
+
+		scanner.Scan()
+		map1.yllcorner, err = strconv.ParseFloat(strings.Fields(scanner.Text())[1], 64)
+
+		scanner.Scan()
+		map1.cellsize, err = ParseFloat32(strings.Fields(scanner.Text())[1])
+
+		//nodata_value can be missing depending on implementation
+		scanner.Scan()
+		if strings.Fields(scanner.Text())[0] == "nodata_value" {
+			map1.noDataValue, err = ParseFloat32(strings.Fields(scanner.Text())[1])
+		} else {
+			map1.noDataValue = noDataValueDefault //Default
 		}
 
-		fmt.Println(map1.ncols, map1.nrows, map1.xllcorner)
+		fmt.Println(map1.ncols, map1.nrows, map1.xllcorner, map1.noDataValue)
 	}
 }
