@@ -22,8 +22,9 @@ func main() {
 	fmt.Println("starting program at root path: " + root)
 
 	//find ascii files
-	allASCIIFiles, err := GetAllASCIIFiles(root)
-	Check(err)
+	allASCIIFiles := GetAllASCIIFiles(root)
+
 	//fmt.Println(allASCIIFiles)
-	GenerateEsriGrids(allASCIIFiles)
+	esriGrids := GenerateEsriGrids(allASCIIFiles)
+	_ = esriGrids
 }

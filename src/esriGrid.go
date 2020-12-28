@@ -24,7 +24,7 @@ type EsriGrid struct {
 }
 
 //GenerateEsriGrids of source files
-func GenerateEsriGrids(ASCIIFilePaths []string) (EsriGrids []EsriGrid) {
+func GenerateEsriGrids(ASCIIFilePaths []string) (esriGrids []EsriGrid) {
 	//get files
 
 	for _, fileName := range ASCIIFilePaths {
@@ -44,9 +44,9 @@ func GenerateEsriGrids(ASCIIFilePaths []string) (EsriGrids []EsriGrid) {
 
 		fmt.Println(map1.ncols, map1.nrows, map1.xllcorner, map1.noDataValue)
 
-		EsriGrids = append(EsriGrids, map1)
+		esriGrids = append(esriGrids, map1)
 	}
-	return EsriGrids
+	return esriGrids
 }
 
 func getEsriGrid(eg *EsriGrid, s *bufio.Scanner) {
@@ -98,10 +98,11 @@ func getEsriInfo(eg *EsriGrid, s *bufio.Scanner) {
 }
 
 //GetAllASCIIFiles returns files, err
-func GetAllASCIIFiles(path string) ([]string, error) {
+func GetAllASCIIFiles(path string) []string {
 	var files []string
 	parentFolder := path
 	fileInfo, err := ioutil.ReadDir(path)
+	Check(err)
 
 	if runtime.GOOS == "windows" {
 		parentFolder += "\\"
@@ -117,11 +118,11 @@ func GetAllASCIIFiles(path string) ([]string, error) {
 
 		if file.IsDir() {
 			var subdirFiles []string
-			subdirFiles, err = GetAllASCIIFiles(parentFolder + file.Name())
+			subdirFiles = GetAllASCIIFiles(parentFolder + file.Name())
 			files = append(files, subdirFiles...)
 		}
 	}
-	return files, err
+	return files
 }
 
 //skipAndScan (skips n scans on s)
