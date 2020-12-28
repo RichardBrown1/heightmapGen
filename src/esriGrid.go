@@ -10,6 +10,8 @@ import (
 	"strings"
 )
 
+const noDataValueDefault = -9999.0
+
 //EsriGrid that holds the ASCII data
 type EsriGrid struct {
 	ncols       int
@@ -24,7 +26,7 @@ type EsriGrid struct {
 //GenerateEsriGrids of source files
 func GenerateEsriGrids(ASCIIFilePaths []string) (EsriGrids []EsriGrid) {
 	//get files
-	const noDataValueDefault = -9999.0
+
 	for _, fileName := range ASCIIFilePaths {
 		fmt.Println(fileName)
 
@@ -39,15 +41,6 @@ func GenerateEsriGrids(ASCIIFilePaths []string) (EsriGrids []EsriGrid) {
 
 		//Get ESRIInfo
 		getEsriInfo(&map1, scanner)
-		// //nodata_value can be missing depending on implementation
-		scanner.Scan()
-		if scanner.Text() == "nodata_value" {
-			scanner.Scan()
-			map1.noDataValue = ParseFloat32(scanner.Text())
-		} else {
-			fmt.Println("'", scanner.Text(), "'")
-			map1.noDataValue = noDataValueDefault
-		}
 
 		map1.grid = make([][]float32, map1.nrows)
 
@@ -91,6 +84,16 @@ func getEsriInfo(eg *EsriGrid, s *bufio.Scanner) {
 
 	SkipAndScan(s, 1)
 	eg.cellsize = ParseFloat32(s.Text())
+
+	//nodata_value can be missing depending on implementation
+	s.Scan()
+	if s.Text() == "nodata_value" {
+		s.Scan()
+		eg.noDataValue = ParseFloat32(s.Text())
+	} else {
+		fmt.Println("'", s.Text(), "'")
+		eg.noDataValue = noDataValueDefault
+	}
 }
 
 //GetAllASCIIFiles returns files, err
