@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"io/ioutil"
 	"runtime"
 	"strings"
@@ -31,4 +32,8 @@ func GetAllASCIIFiles(path string) ([]string, error) {
 		}
 	}
 	return files, err
+}
+
+func ScanAndSkip(s bufio.Scanner) {
+
 }
