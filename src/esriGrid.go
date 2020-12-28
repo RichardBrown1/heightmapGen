@@ -38,26 +38,7 @@ func GenerateEsriGrids(ASCIIFilePaths []string) (EsriGrids []EsriGrid) {
 		scanner.Split(bufio.ScanWords)
 
 		//Get ESRIInfo
-
-		//Getting right hand side of col - should validate but EsriGrids are standardised somewhat
-		SkipAndScan(scanner, 1)
-		map1.ncols, err = strconv.Atoi(scanner.Text())
-
-		SkipAndScan(scanner, 1)
-		map1.nrows, err = strconv.Atoi(scanner.Text())
-
-		//map1.grid = map1.grid[:map1.nrows][:map1.ncols]
-
-		//TODO: There are xllcenter and yllcenter in some esri grids
-		SkipAndScan(scanner, 1)
-		map1.xllcorner, err = strconv.ParseFloat(scanner.Text(), 64)
-
-		SkipAndScan(scanner, 1)
-		map1.yllcorner, err = strconv.ParseFloat(scanner.Text(), 64)
-
-		SkipAndScan(scanner, 1)
-		map1.cellsize = ParseFloat32(scanner.Text())
-
+		getEsriInfo(&map1, scanner)
 		// //nodata_value can be missing depending on implementation
 		scanner.Scan()
 		if scanner.Text() == "nodata_value" {
@@ -85,6 +66,31 @@ func GenerateEsriGrids(ASCIIFilePaths []string) (EsriGrids []EsriGrid) {
 		EsriGrids = append(EsriGrids, map1)
 	}
 	return EsriGrids
+}
+
+func getEsriInfo(eg *EsriGrid, s *bufio.Scanner) {
+	var err error
+
+	//Getting right hand side of col - should validate but EsriGrids are standardised somewhat
+	SkipAndScan(s, 1)
+	eg.ncols, err = strconv.Atoi(s.Text())
+	Check(err)
+
+	SkipAndScan(s, 1)
+	eg.nrows, err = strconv.Atoi(s.Text())
+	Check(err)
+
+	//TODO: There are xllcenter and yllcenter in some esri grids
+	SkipAndScan(s, 1)
+	eg.xllcorner, err = strconv.ParseFloat(s.Text(), 64)
+	Check(err)
+
+	SkipAndScan(s, 1)
+	eg.yllcorner, err = strconv.ParseFloat(s.Text(), 64)
+	Check(err)
+
+	SkipAndScan(s, 1)
+	eg.cellsize = ParseFloat32(s.Text())
 }
 
 //GetAllASCIIFiles returns files, err
