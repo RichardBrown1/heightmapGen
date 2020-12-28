@@ -34,6 +34,10 @@ func GetAllASCIIFiles(path string) ([]string, error) {
 	return files, err
 }
 
-func ScanAndSkip(s bufio.Scanner) {
-
+//SkipAndScan (skips n scans on s)
+func SkipAndScan(s *bufio.Scanner, n int) {
+	for n >= 0 {
+		s.Scan()
+		n--
+	}
 }

@@ -45,25 +45,22 @@ func main() {
 		//Get ESRIInfo
 
 		//Getting right hand side of col - should validate but esrigrids are standardised somewhat
-		scanner.Scan()
-		scanner.Scan()
+		//scanner.Scan()
+		//scanner.Scan()
+		SkipAndScan(scanner, 1)
 		map1.ncols, err = strconv.Atoi(scanner.Text())
 
-		scanner.Scan()
-		scanner.Scan()
+		SkipAndScan(scanner, 1)
 		map1.nrows, err = strconv.Atoi(scanner.Text())
 
 		//TODO: There are xllcenter and yllcenter in some esri grids
-		scanner.Scan()
-		scanner.Scan()
+		SkipAndScan(scanner, 1)
 		map1.xllcorner, err = strconv.ParseFloat(scanner.Text(), 64)
 
-		scanner.Scan()
-		scanner.Scan()
+		SkipAndScan(scanner, 1)
 		map1.yllcorner, err = strconv.ParseFloat(scanner.Text(), 64)
 
-		scanner.Scan()
-		scanner.Scan()
+		SkipAndScan(scanner, 1)
 		map1.cellsize, err = ParseFloat32(scanner.Text())
 
 		// //nodata_value can be missing depending on implementation
