@@ -85,7 +85,7 @@ func getEsriInfo(eg *EsriGrid, s *bufio.Scanner) {
 	skipAndScan(s, 1)
 	eg.cellsize = ParseFloat32(s.Text())
 
-	//nodata_value can be missing depending on implementation
+	//nodata_value can be missing depending on implementation -- wikipedia said so
 	s.Scan()
 	if s.Text() == "nodata_value" {
 		s.Scan()
