@@ -31,34 +31,35 @@ func GenerateEsriGrids(ASCIIFilePaths []string) (EsriGrids []EsriGrid) {
 		fmt.Println(fileName)
 
 		file, err := os.Open(fileName)
-		Check(err)
 		defer file.Close()
+		Check(err)
 
 		var map1 EsriGrid
 
 		scanner := bufio.NewScanner(file)
 		scanner.Split(bufio.ScanWords)
 
-		//Get ESRIInfo
 		getEsriInfo(&map1, scanner)
-
-		map1.grid = make([][]float32, map1.nrows)
-
-		for r := 1; r < map1.nrows; r++ {
-			map1.grid[r] = make([]float32, map1.ncols)
-			for c := 1; c < map1.ncols; c++ {
-				map1.grid[r][c] = ParseFloat32(scanner.Text())
-				if !scanner.Scan() {
-					break
-				}
-			}
-		}
+		getEsriGrid(&map1, scanner)
 
 		fmt.Println(map1.ncols, map1.nrows, map1.xllcorner, map1.noDataValue)
 
 		EsriGrids = append(EsriGrids, map1)
 	}
 	return EsriGrids
+}
+
+func getEsriGrid(eg *EsriGrid, s *bufio.Scanner) {
+	eg.grid = make([][]float32, eg.nrows)
+	for r := 1; r < eg.nrows; r++ {
+		eg.grid[r] = make([]float32, eg.ncols)
+		for c := 1; c < eg.ncols; c++ {
+			eg.grid[r][c] = ParseFloat32(s.Text())
+			if !s.Scan() {
+				break
+			}
+		}
+	}
 }
 
 func getEsriInfo(eg *EsriGrid, s *bufio.Scanner) {
