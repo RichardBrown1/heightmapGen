@@ -61,13 +61,13 @@ func main() {
 		map1.yllcorner, err = strconv.ParseFloat(scanner.Text(), 64)
 
 		SkipAndScan(scanner, 1)
-		map1.cellsize, err = ParseFloat32(scanner.Text())
+		map1.cellsize = ParseFloat32(scanner.Text())
 
 		// //nodata_value can be missing depending on implementation
 		scanner.Scan()
 		if scanner.Text() == "nodata_value" {
 			scanner.Scan()
-			map1.noDataValue, err = ParseFloat32(scanner.Text())
+			map1.noDataValue = ParseFloat32(scanner.Text())
 		} else {
 			fmt.Println("'", scanner.Text(), "'")
 			map1.noDataValue = noDataValueDefault
@@ -78,15 +78,12 @@ func main() {
 		for r := 1; r < map1.nrows; r++ {
 			map1.grid[r] = make([]float32, map1.ncols)
 			for c := 1; c < map1.ncols; c++ {
-				var v float32 //map1.grid[r][c]
-				v, err = ParseFloat32(scanner.Text())
-				map1.grid[r][c] = v
+				map1.grid[r][c] = ParseFloat32(scanner.Text())
 				if !scanner.Scan() {
 					break
 				}
 			}
 		}
 		fmt.Println(map1.ncols, map1.nrows, map1.xllcorner, map1.noDataValue)
-		//fmt.Println(map1.grid)
 	}
 }
