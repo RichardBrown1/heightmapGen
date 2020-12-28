@@ -65,24 +65,24 @@ func getEsriInfo(eg *EsriGrid, s *bufio.Scanner) {
 	var err error
 
 	//Getting right hand side of col - should validate but EsriGrids are standardised somewhat
-	SkipAndScan(s, 1)
+	skipAndScan(s, 1)
 	eg.ncols, err = strconv.Atoi(s.Text())
 	Check(err)
 
-	SkipAndScan(s, 1)
+	skipAndScan(s, 1)
 	eg.nrows, err = strconv.Atoi(s.Text())
 	Check(err)
 
 	//TODO: There are xllcenter and yllcenter in some esri grids
-	SkipAndScan(s, 1)
+	skipAndScan(s, 1)
 	eg.xllcorner, err = strconv.ParseFloat(s.Text(), 64)
 	Check(err)
 
-	SkipAndScan(s, 1)
+	skipAndScan(s, 1)
 	eg.yllcorner, err = strconv.ParseFloat(s.Text(), 64)
 	Check(err)
 
-	SkipAndScan(s, 1)
+	skipAndScan(s, 1)
 	eg.cellsize = ParseFloat32(s.Text())
 
 	//nodata_value can be missing depending on implementation
@@ -123,8 +123,8 @@ func GetAllASCIIFiles(path string) ([]string, error) {
 	return files, err
 }
 
-//SkipAndScan (skips n scans on s)
-func SkipAndScan(s *bufio.Scanner, n int) {
+//skipAndScan (skips n scans on s)
+func skipAndScan(s *bufio.Scanner, n int) {
 	for n >= 0 {
 		s.Scan()
 		n--
