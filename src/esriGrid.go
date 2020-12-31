@@ -42,8 +42,6 @@ func GenerateEsriGrids(ASCIIFilePaths []string) (esriGrids []EsriGrid) {
 		getEsriInfo(&map1, scanner)
 		getEsriGrid(&map1, scanner)
 
-		fmt.Println(map1.ncols, map1.nrows, map1.xllcorner, map1.noDataValue)
-
 		esriGrids = append(esriGrids, map1)
 	}
 	return esriGrids
@@ -95,6 +93,13 @@ func getEsriInfo(eg *EsriGrid, s *bufio.Scanner) {
 		fmt.Println("'", s.Text(), "'")
 		eg.noDataValue = noDataValueDefault
 	}
+
+	fmt.Println(" cols", eg.ncols,
+		"\n rows", eg.nrows,
+		"\n xllcorner", eg.xllcorner,
+		"\n cellSize", eg.cellsize,
+		"\n noDataVal", eg.noDataValue)
+
 }
 
 //GetAllASCIIFiles returns files, err
