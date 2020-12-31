@@ -50,7 +50,6 @@ func main() {
 	nCols := esriGrids[0].ncols
 	for _, eg := range esriGrids {
 		//find lowest xll and yll corner
-		fmt.Println(eg.xllcorner)
 		if eg.xllcorner < lowx {
 			lowx = eg.xllcorner
 		} else {
@@ -85,7 +84,18 @@ func main() {
 		return esriGrids[i].yllcorner < esriGrids[j].yllcorner
 	})
 
-	// for _,gx := range highx - lowx
+	i := 0
+	for egx := lowx; egx <= highx && i < len(esriGrids); egx += float64(float32(nRows) * cellSize) {
+		for egy := lowy; egy <= highy && i < len(esriGrids); egy += float64(float32(nCols) * cellSize) {
+			fmt.Println("iterations", egx, egy)
+			if esriGrids[i].xllcorner == egx && esriGrids[i].yllcorner == egy {
+				i++
+			} else {
+				fmt.Println("tile skipped... ")
+
+			}
+		}
+	}
 	//scale it. Map is 17.28km^2
 
 	//  /1081 = ~16m - 15.9851988899
