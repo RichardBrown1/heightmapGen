@@ -94,11 +94,12 @@ func getEsriInfo(eg *EsriGrid, s *bufio.Scanner) {
 		eg.noDataValue = noDataValueDefault
 	}
 
-	fmt.Println(" cols", eg.ncols,
-		"\n rows", eg.nrows,
-		"\n xllcorner", eg.xllcorner,
-		"\n cellSize", eg.cellsize,
-		"\n noDataVal", eg.noDataValue)
+	//fmt.Println(" cols", eg.ncols,
+	// "\n rows", eg.nrows,
+	// "\n xllcorner", eg.xllcorner,
+	// "\n yllcorner", eg.yllcorner,
+	// "\n cellSize", eg.cellsize,
+	// "\n noDataVal", eg.noDataValue)
 
 }
 
