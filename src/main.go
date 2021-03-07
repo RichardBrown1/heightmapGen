@@ -86,29 +86,31 @@ func main() {
 
 	//allocate StitchedGrid
 	//this wont work if nrows, ncols, xllcorner, yllcorner arent integers
-	stitchedGrid := make([][]float32, int(highx+(float64(float32(nCols)*cellSize))-lowx))
-	for i := range stitchedGrid {
-		stitchedGrid[i] = make([]float32, int(highy+(float64(float32(nCols)*cellSize))-lowy))
-	}
+	// stitchedGrid := make([][]float32, int(highx+(float64(float32(nCols)*cellSize))-lowx))
+	// for i := range stitchedGrid {
+	// 	stitchedGrid[i] = make([]float32, int(highy+(float64(float32(nCols)*cellSize))-lowy))
+	// }
+
+	//todo remove floats and only allow integer cellsizes and w/e
 
 	//down to up; left to right
-	i := 0
-	for egx := lowx; egx <= highx && i < len(esriGrids); egx += float64(float32(nCols) * cellSize) {
-		for egy := lowy; egy <= highy && i < len(esriGrids); egy += float64(float32(nRows) * cellSize) {
-			fmt.Println("iterations", egx, egy)
-			if esriGrids[i].xllcorner == egx && esriGrids[i].yllcorner == egy {
-				for y := esriGrids.nrows; y > 0; y-- { //down to up
-					for x := 0; x < esriGrids.ncols; x++ {
-						stitchedGrid[egx-lowx][egy-lowy] = esriGrids[i][x][y]
-					}
-				}
-				i++
-			} else {
-				fmt.Println("tile skipped... ")
+	// i := 0
+	// for egx := lowx; egx <= highx && i < len(esriGrids); egx += float64(float32(nCols) * cellSize) {
+	// 	for egy := lowy; egy <= highy && i < len(esriGrids); egy += float64(float32(nRows) * cellSize) {
+	// 		fmt.Println("iterations", egx, egy)
+	// 		if esriGrids[i].xllcorner == egx && esriGrids[i].yllcorner == egy {
+	// 			for y := esriGrids.nrows; y > 0; y-- { //down to up
+	// 				for x := 0; x < esriGrids.ncols; x++ {
+	// 					stitchedGrid[egx-lowx][egy-lowy] = esriGrids[i][x][y]
+	// 				}
+	// 			}
+	// 			i++
+	// 		} else {
+	// 			fmt.Println("tile skipped... ")
 
-			}
-		}
-	}
+	// 		}
+	// 	}
+	// }
 	//scale it. Map is 17.28km^2
 
 	//  /1081 = ~16m - 15.9851988899
