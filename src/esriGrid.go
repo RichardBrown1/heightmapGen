@@ -16,9 +16,9 @@ const noDataValueDefault = -9999.0
 type EsriGrid struct {
 	ncols       int
 	nrows       int
-	xllcorner   float64
-	yllcorner   float64
-	cellsize    float32
+	xllcorner   int
+	yllcorner   int
+	cellsize    int
 	noDataValue float32
 	grid        [][]float32
 }
@@ -62,6 +62,7 @@ func getEsriGrid(eg *EsriGrid, s *bufio.Scanner) {
 
 func getEsriInfo(eg *EsriGrid, s *bufio.Scanner) {
 	var err error
+	var tmp float64
 
 	//Getting right hand side of col - should validate but EsriGrids are standardised somewhat
 	skipAndScan(s, 1)
@@ -74,15 +75,19 @@ func getEsriInfo(eg *EsriGrid, s *bufio.Scanner) {
 
 	//TODO: There are xllcenter and yllcenter in some esri grids
 	skipAndScan(s, 1)
-	eg.xllcorner, err = strconv.ParseFloat(s.Text(), 64)
+	tmp, err = strconv.ParseFloat(s.Text(), 64)
+	eg.xllcorner = int(tmp)
 	Check(err)
 
 	skipAndScan(s, 1)
-	eg.yllcorner, err = strconv.ParseFloat(s.Text(), 64)
+	tmp, err = strconv.ParseFloat(s.Text(), 64)
+	eg.yllcorner = int(tmp)
 	Check(err)
 
 	skipAndScan(s, 1)
-	eg.cellsize = ParseFloat32(s.Text())
+	tmp, err = strconv.ParseFloat(s.Text(), 64)
+	eg.cellsize = int(tmp)
+	Check(err)
 
 	//nodata_value can be missing depending on implementation -- wikipedia said so
 	s.Scan()
