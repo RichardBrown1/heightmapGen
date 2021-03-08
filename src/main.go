@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"image"
+	"image/color"
+	"image/png"
 	"math"
 	"os"
 )
@@ -78,32 +81,96 @@ func main() {
 	// })
 
 	//this wont work if nrows, ncols, xllcorner, yllcorner arent integers
-	stitchedGrid := make([][]float32, int((highX+nRows*cellSize)-lowX))
+	// stitchedGrid := make([][]float32, int((highX+nRows*cellSize)-lowX))
+	// for i := range stitchedGrid {
+	// 	stitchedGrid[i] = make([]float32, int((highY+nCols*cellSize)-lowY))
+	// }
+
+	// working but lts try reverse //this wont work if nrows, ncols, xllcorner, yllcorner arent integers
+	//grid has to be square so see which one is bigger.
+	stitchedGridLength := 0
+	if (highY+nRows*cellSize)-lowY > (highX+nCols*cellSize)-lowX {
+		stitchedGridLength = (highY + nRows*cellSize) - lowY
+	} else {
+		stitchedGridLength = (highX + nCols*cellSize) - lowX
+	}
+
+	stitchedGrid := make([][]float32, stitchedGridLength)
 	for i := range stitchedGrid {
-		stitchedGrid[i] = make([]float32, int((highY+nCols*cellSize)-lowY))
+		stitchedGrid[i] = make([]float32, stitchedGridLength)
 	}
 
-	for y := highY; y <= lowY; y += cellSize {
-		for x := highX; x <= lowX; x += cellSize {
-			for _, eg := range esriGrids {
-				if eg.xllcorner == x && eg.yllcorner == y {
-					for egY := 0; egY < eg.nrows; egY++ {
-						for egX := 0; egX < eg.nrows; egX++ {
-							stitchedGrid[highX-x][highY-y] = eg.grid[egY][egX]
-						}
-					}
+	// stitchedGrid := make([][]float32, int((highY+nRows*cellSize)-lowY))
+	// for i := range stitchedGrid {
+	// 	stitchedGrid[i] = make([]float32, int((highX+nCols*cellSize)-lowX))
+	// }
 
+	highest := float32(math.MaxFloat32 * -1)
+	lowest := float32(-40) //float32(math.MaxFloat32)
+
+	// maxX := highX + nRows*cellSize - lowX
+	// maxY := highY + nRows*cellSize - lowY
+
+	for _, eg := range esriGrids {
+		fmt.Println(eg.xllcorner, eg.yllcorner)
+		for y := 0; y < eg.nrows; y++ {
+			for x := 0; x < eg.ncols; x++ {
+				// fmt.Println(y+eg.yllcorner-lowY, " ", x+eg.xllcorner-lowX)
+				if eg.grid[y][x] == eg.noDataValue {
+					eg.grid[y][x] = -40
+				} else if eg.grid[y][x] > highest {
+					highest = eg.grid[y][x]
 				}
+
+				// working but tiled weirdly stitchedGrid[y+eg.yllcorner-lowY][x+eg.xllcorner-lowX] = eg.grid[y][x]
+				// working but inverted on x axis stitchedGrid[highY-eg.yllcorner+y][x+eg.xllcorner-lowX] = eg.grid[y][x]
+				stitchedGrid[eg.yllcorner-lowY+y][x+eg.xllcorner-lowX] = eg.grid[nRows-1-y][x]
 			}
+
 		}
+
 	}
 
-	//allocate finalgrid.
+	fmt.Println("highest:", int(highest))
+	fmt.Println("lowest", int(lowest))
+
 	const mapResolution = 1081
-	finalGrid := make([][]float32, mapResolution)
-	for i := range finalGrid {
-		finalGrid[i] = make([]float32, mapResolution)
+	var mapScale = len(stitchedGrid) / mapResolution
+	var colorScale = float32(64) //(float32(65535) / (highest - lowest))
+	// fmt.Println(mapResolution, " ", len(stitchedGrid[0]))
+	fmt.Println(mapScale, " ", colorScale)
+	fmt.Println(colorScale * (lowest + 40))
+
+	//create image
+	img := image.NewGray16(image.Rectangle{image.Point{0, 0}, image.Point{mapResolution, mapResolution}})
+	// fmt.Println(stitchedGrid)
+	for i := 0; i < mapResolution; i++ {
+		for j := 0; j < mapResolution; j++ {
+
+			//fmt.Println(stitchedGrid[i][j] + 40)
+			// img.Set(j, i, color.Gray{uint8(x + y)})
+			img.Set(j, i, color.Gray16{uint16((stitchedGrid[j*mapScale][i*mapScale] + 40) * colorScale)})
+			// img.Set(j, i, color.Gray{uint8(stitchedGrid[x][y] + 40)})
+
+		}
+
 	}
+
+	// i := 0
+	// for y := 0; y < mapResolution; y += mapScale {
+	// 	j := 0
+	// 	for x := 0; x < mapResolution; x += mapScale {
+	// 		fmt.Println(mapResolution, " ", mapScale)
+	// 		fmt.Println(stitchedGrid[x][y] + 40)
+	// 		img.Set(j, i, color.Gray{uint8(x + y)})
+	// 		// img.Set(j, i, color.Gray{uint8(stitchedGrid[x][y] + 40)})
+	// 		j++
+	// 	}
+	// 	i++
+	// }
+
+	f, _ := os.Create("image.png")
+	png.Encode(f, img)
 
 	//create image
 	// img := image.NewGray16(image.Rectangle{image.Point{0, 0}, image.Point{mapResolution, mapResolution}})

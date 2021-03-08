@@ -44,15 +44,19 @@ func GenerateEsriGrids(ASCIIFilePaths []string) (esriGrids []EsriGrid) {
 
 		esriGrids = append(esriGrids, map1)
 	}
+
+	fmt.Println(esriGrids[0].grid[0][0])
+
 	return esriGrids
 }
 
 func getEsriGrid(eg *EsriGrid, s *bufio.Scanner) {
 	eg.grid = make([][]float32, eg.nrows)
-	for r := 1; r < eg.nrows; r++ {
+	for r := 0; r < eg.nrows; r++ {
 		eg.grid[r] = make([]float32, eg.ncols)
-		for c := 1; c < eg.ncols; c++ {
+		for c := 0; c < eg.ncols; c++ {
 			eg.grid[r][c] = ParseFloat32(s.Text())
+			//fmt.Println(eg.grid[r][c])
 			if !s.Scan() {
 				break
 			}
