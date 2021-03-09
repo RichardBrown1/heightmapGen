@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"os"
 	"runtime"
 	"strconv"
@@ -21,6 +22,52 @@ type EsriGrid struct {
 	cellsize    int
 	noDataValue float32
 	grid        [][]float32
+}
+
+//GetEsriGridHighLow find highs and lows
+func GetEsriGridHighLow(esriGrids []EsriGrid) (highY int, lowY int, highX int, lowX int, nRows int, nCols int, cellSize int) {
+	//todo: stitch heightmaps together
+	//for now assume cellsize is the same and its all from 1 data source
+	lowX = math.MaxInt32
+	lowY = math.MaxInt32
+	highX = math.MaxInt32 * -1 //minFloat64
+	highY = math.MaxInt32 * -1
+
+	cellSize = esriGrids[0].cellsize
+	nRows = esriGrids[0].nrows
+	nCols = esriGrids[0].ncols
+	for _, eg := range esriGrids {
+		//find lowest xll and yll corner
+		if eg.xllcorner < lowX {
+			lowX = eg.xllcorner
+		} else {
+			if eg.xllcorner > highX {
+				highX = eg.xllcorner
+			}
+		}
+		if eg.yllcorner < lowY {
+			lowY = eg.yllcorner
+		} else {
+			if eg.yllcorner > highY {
+				highY = eg.yllcorner
+			}
+		}
+		if eg.cellsize != cellSize || eg.nrows != nRows || eg.ncols != nCols {
+			fmt.Println("cellsize, row or col counts are not consistent ... will terminate this program isnt good enough to handle that ")
+			panic(1)
+		}
+	}
+
+	fmt.Println(
+		" lowX: ", lowX,
+		"\n lowY: ", lowY,
+		"\n highX: ", highX,
+		"\n highY: ", highY,
+		"\n nCols: ", nCols,
+		"\n nRows: ", nRows,
+		"\n Cellsize: ", cellSize)
+
+	return highY, lowY, highX, lowX, nRows, nCols, cellSize
 }
 
 //GenerateEsriGrids of source files
