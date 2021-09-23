@@ -5,3 +5,5 @@ Stitches together [ELVIS](https://elevation.fsdf.org.au/) 1m NSW Spatial Service
 ## Example - Palm Beach - Newport Area
 
 ![Palm Beach](/example.png)
+
+Black Squares are from areas with no data
