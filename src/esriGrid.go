@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 const noDataValueDefault = -9999.0
@@ -40,18 +41,18 @@ func GetEsriGridHighLow(esriGrids []EsriGrid) (highY int, lowY int, highX int, l
 		//find lowest xll and yll corner
 		if eg.xllcorner < lowX {
 			lowX = eg.xllcorner
-		} else {
-			if eg.xllcorner > highX {
-				highX = eg.xllcorner
-			}
 		}
+		if eg.xllcorner > highX {
+			highX = eg.xllcorner
+		}
+
 		if eg.yllcorner < lowY {
 			lowY = eg.yllcorner
-		} else {
-			if eg.yllcorner > highY {
-				highY = eg.yllcorner
-			}
 		}
+		if eg.yllcorner > highY {
+			highY = eg.yllcorner
+		}
+
 		if eg.cellsize != cellSize || eg.nrows != nRows || eg.ncols != nCols {
 			fmt.Println("cellsize, row or col counts are not consistent ... will terminate this program isnt good enough to handle that ")
 			panic(1)
@@ -72,27 +73,41 @@ func GetEsriGridHighLow(esriGrids []EsriGrid) (highY int, lowY int, highX int, l
 
 //GenerateEsriGrids of source files
 func GenerateEsriGrids(ASCIIFilePaths []string) (esriGrids []EsriGrid) {
-	//get files
+	ch := make(chan EsriGrid)
+	var wg sync.WaitGroup
 
 	for _, fileName := range ASCIIFilePaths {
 		fmt.Println(fileName)
 
 		file, err := os.Open(fileName)
-		defer file.Close()
 		Check(err)
+		defer file.Close()
 
-		var map1 EsriGrid
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			var eg EsriGrid
 
-		scanner := bufio.NewScanner(file)
-		scanner.Split(bufio.ScanWords)
+			scanner := bufio.NewScanner(file)
+			scanner.Split(bufio.ScanWords)
 
-		getEsriInfo(&map1, scanner)
-		getEsriGrid(&map1, scanner)
+			getEsriInfo(&eg, scanner)
+			getEsriGrid(&eg, scanner)
 
-		esriGrids = append(esriGrids, map1)
+			ch <- eg
+		}()
 	}
 
-	fmt.Println(esriGrids[0].grid[0][0])
+	go func() {
+		for esriGrid := range ch {
+			esriGrids = append(esriGrids, esriGrid)
+		}
+	}()
+
+	wg.Wait()
+	close(ch)
+
+	fmt.Println("found ", len(esriGrids), " esrigrids")
 
 	return esriGrids
 }
